@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulte a situação de seu veículo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 400px;
+            margin: auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f1f1f1;
+            border-radius: 5px;
+        }
+        .error {
+            color: red;
+        }
+        .logo {
+            width: 150px;
+            margin-bottom: 20px;
+        }
+        footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Exibir a logo da empresa -->
+        <img src="LOGO.png" alt="Logo Roda Pneu" class="logo">
+
+
+        <h1>Consulta de Veículo</h1>
+        <input type="text" id="placa" placeholder="Digite a placa do veículo (ex: ABC1234)">
+        <button onclick="consultarPlaca()">Consultar</button>
+        <div id="resultado" class="result"></div>
+    </div>
+    <footer>
+        © 2024 Roda Pneu Autocenter - Todos os direitos reservados.
+    </footer>
+
+    <script>
+        async function consultarPlaca() {
+            const placa = document.getElementById('placa').value.trim();
+            const resultado = document.getElementById('resultado');
+            resultado.innerHTML = ''; // Limpa resultados anteriores
+
+            if (!placa) {
+                resultado.innerHTML = '<p class="error">Por favor, insira uma placa válida.</p>';
+                return;
+            }
+
+            const url = `https://script.google.com/macros/s/AKfycbw9VqbdxB6-cL0cF2tzO9p-YVaSTorQAQk-nKLt_ti-LucxGWcQnc9soo6Gbl6ZFjw/exec?placa=${placa}`;
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error('Erro na comunicação com a API.');
+                }
+
+                const data = await response.json();
+                if (data.error) {
+                    resultado.innerHTML = `<p class="error">${data.error}</p>`;
+                } else {
+                    resultado.innerHTML = ` 
+                        <p><strong>Nome:</strong> ${data.Nome}</p>
+                        <p><strong>Data de Entrada:</strong> ${data.DataEntrada}</p>
+                        <p><strong>Situação:</strong> ${data.Situacao}</p>
+                    `;
+                }
+            } catch (error) {
+                resultado.innerHTML = '<p class="error">Ocorreu um erro ao buscar as informações. Verifique a conexão ou tente novamente.</p>';
+            }
+        }
+    </script>
+</body>
+</html>
